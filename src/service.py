@@ -3,6 +3,9 @@ class Service():
 
     # subclass build
     class Build():
+        """
+        service.build
+        """
         # initializer
         def __init__(self):
             self.build = {}
@@ -13,7 +16,7 @@ class Service():
                 self.build['context'] = input
                 return True
             else:
-                raise Exception('INVALID INPUT:{}\nis not a string'.format(input))
+                raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
 
         # add dockerfile
         def dockerfile(self, input):
@@ -21,7 +24,7 @@ class Service():
                 self.build['dockerfile'] = input
                 return True
             else:
-                raise Exception('INVALID INPUT:{}\nis not a string'.format(input))
+                raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
 
         # add args
         def args(self, input):
@@ -29,7 +32,7 @@ class Service():
                 self.build['args'] = input
                 return True
             else:
-                raise Exception('INVALID INPUT:{}\nis not a list'.format(input))
+                raise Exception('INVALID INPUT: "{}" is not a list'.format(input))
 
         # add cache_from
         def cache_from(self, input):
@@ -37,7 +40,7 @@ class Service():
                 self.build['cache_from'] = input
                 return True
             else:
-                raise Exception('INVALID INPUT:{}\nis not a list'.format(input))
+                raise Exception('INVALID INPUT: "{}" is not a list'.format(input))
 
         # add labels
         def labels(self, input):
@@ -45,7 +48,7 @@ class Service():
                 self.build['labels'] = input
                 return True
             else:
-                raise Exception('INVALID INPUT:{}\nis not a list or dict'.format(input))
+                raise Exception('INVALID INPUT: "{}" is not a list or dict'.format(input))
 
         # add wshm_size
         def shm_size(self, input):
@@ -53,7 +56,7 @@ class Service():
                 self.build['shm_size'] = input
                 return True
             else:
-                raise Exception('INVALID INPUT:{}\nis not an integer'.format(input))
+                raise Exception('INVALID INPUT: "{}" is not an integer'.format(input))
 
         # add target
         def target(self, input):
@@ -61,19 +64,87 @@ class Service():
                 self.build['target'] = input
                 return True
             else:
-                raise Exception('INVALID INPUT:{}\nis not a string'.format(input))
+                raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
 
         #return self as dictionary
         def get_dict(self):
-            if('context' in self.build):
-                return(dict(self.build))
-            else:
-                raise Exception('ERROR: build.context was not assigned')
+            return(dict(self.build))
 
     class Deploy():
+        """
+        service.deploy
+        """
+        class RestartPolicy():
+            """
+            service.deploy.restart_policy
+            """
+            #initializer
+            def __init__(self):
+                self.restart_policy = {}
+
+            #add restart policy condition
+            def condition(self, input):
+                """
+                Add restart policy condition, if unset will default to
+                @type input: string
+                @param input: One of 'none', 'on-failure' or 'any'
+                """
+                if(isinstance(input, str)):
+                    if(input in ['none', 'on-failure', 'any']):
+                        self.restart_policy['condition'] = input
+                    else:
+                        raise Exception("INVALID INPUT: '{}' is not One of 'none', 'on-failure' or 'any'".format(input))
+                else:
+                    raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
+
+            #add restart policy delay
+            def delay(self, input):
+                """
+                add delay to restart policy
+                @type:  string
+                @param: How long to wait between restart attempts
+                """
+                if(isinstance(input, str)):
+                    self.restart_policy['deplay'] = input
+                else:
+                    raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
+
+            #add restart policy delay
+            def max_attempts(self, input):
+                """
+                add max attempts to restart policy
+                @type:  integer
+                @param: How many times to attempt to restart a container before giving up
+                """
+                if(isinstance(input, str)):
+                    self.restart_policy['max_attempts'] = input
+                else:
+                    raise Exception('INVALID INPUT: "{}" is not an integer'.format(input))
+
+            #add restart policy delay
+            def window(self, input):
+                """
+                add window to restart policy
+                @type:  integer
+                @param: How long to wait before deciding if a restart has succeeded
+                """
+                if(isinstance(input, str)):
+                    self.restart_policy['window'] = input
+                else:
+                    raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
+            
+            #return self dictionary
+            def get_dict(self):
+                """
+                Return service.deploy dictionary
+                """
+                return(dict(self.restart_policy))
+
         #initializer
         def __init__(self):
             self.deploy = {}
+            self.restart_policy = self.RestartPolicy()
+            self.deploy['restart_policy'] = self.restart_policy
 
         #add context
         def endpoint_mode(self, input):
@@ -81,7 +152,7 @@ class Service():
                 self.deploy['endpoint_mode'] = input
                 return True
             else:
-                raise Exception('INVALID INPUT:{}\nis not a string'.format(input))
+                raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
 
         #add labels
         def labels(self, input):
@@ -89,122 +160,76 @@ class Service():
                 self.deploy['labels'] = input
                 return True
             else:
-                raise Exception('INVALID INPUT:{}\nis not a list or dict'.format(input))
+                raise Exception('INVALID INPUT: "{}" is not a list or dict'.format(input))
         
         #add placement, constraints
         def placement_constraints(self, input):
             if(isinstance(input, list)):
+                self.deploy['placement'] = {}
                 self.deploy['placement']['constraints'] = input
             else:
-                raise Exception('INVALID INPUT:{}\nis not a list'.format(input))
+                raise Exception('INVALID INPUT: "{}" is not a list'.format(input))
 
         #add placement preference
         def placement_preference(self, input):
             if(isinstance(input, list)):
+                self.deploy['placement'] = {}
                 self.deploy['placement']['preference'] = input
             else:
-                raise Exception('INVALID INPUT:{}\nis not a list'.format(input))
+                raise Exception('INVALID INPUT: "{}" is not a list'.format(input))
 
         #add replicas
         def replicas(self, input):
-            if(isinstance(input, str)):
-                self.deploy['placement']['constraints'] = input
+            if(isinstance(input, int)):
+                self.deploy['replicas'] = input
             else:
-                raise Exception('INVALID INPUT:{}\nis not a list'.format(input))
+                raise Exception('INVALID INPUT: "{}" is not an integer'.format(input))
 
         #add resources limit cpu
         def resources_limits_cpu(self, input):
             if(isinstance(input, str)):
                 self.deploy['resources']['limits']['cpus'] = input
             else:
-                raise Exception('INVALID INPUT:{}\nis not a string'.format(input))
+                raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
 
         #add resources limit memory
         def resources_limits_memory(self, input):
             if(isinstance(input, str)):
                 self.deploy['resources']['limits']['memory'] = input
             else:
-                raise Exception('INVALID INPUT:{}\nis not a string'.format(input))
+                raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
 
         #add resources reservations cpu
         def resources_reservations_cpu(self, input):
             if(isinstance(input, str)):
                 self.deploy['resources']['limits']['cpus'] = input
             else:
-                raise Exception('INVALID INPUT:{}\nis not a string'.format(input))
+                raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
 
         #add resources reservations memory
         def resources_reservations_memory(self, input):
             if(isinstance(input, str)):
                 self.deploy['resources']['limits']['memory'] = input
             else:
-                raise Exception('INVALID INPUT:{}\nis not a string'.format(input))
-        
-        #add restart policy condition
-        def restart_policy_condition(self, input):
-            """
-            Add restart policy condition
-            @type input: string
-            @param input: One of 'none', 'on-failure' or 'any'
-            """
-            if(isinstance(input, str)):
-                if(input in ['none', 'on-failure', 'any']):
-                    self.deploy['restart_policy']['condition'] = input
-                else:
-                    raise Exception("INVALID INPUT:{}\nis not One of 'none', 'on-failure' or 'any'".format(input))
-            else:
-                raise Exception('INVALID INPUT:{}\nis not a string'.format(input))
+                raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
 
-        #add restart policy delay
-        def restart_policy_delay(self, input):
-            """
-            add delay to restart policy
-            @type:  string
-            @param: How long to wait between restart attempts
-            """
-            if(isinstance(input, str)):
-                self.deploy['restart_policy']['deploy'] = input
-            else:
-                raise Exception('INVALID INPUT:{}\nis not a string'.format(input))
-
-        #add restart policy delay
-        def restart_policy_max_attempts(self, input):
-            """
-            add max attempts to restart policy
-            @type:  integer
-            @param: How many times to attempt to restart a container before giving up
-            """
-            if(isinstance(input, str)):
-                self.deploy['restart_policy']['max_attempts'] = input
-            else:
-                raise Exception('INVALID INPUT:{}\nis not an integer'.format(input))
-
-        #add restart policy delay
-        def restart_policy_window(self, input):
-            """
-            add window to restart policy
-            @type:  integer
-            @param: How long to wait before deciding if a restart has succeeded
-            """
-            if(isinstance(input, str)):
-                self.deploy['restart_policy']['window'] = input
-            else:
-                raise Exception('INVALID INPUT:{}\nis not a string'.format(input))
-
-        #def restart policy rollback_config
-        def restart_policy_rollback_config(self, input):
+        #def restart policy rollback_config TODO: implement this in another class
+        def rollback_config(self, input):
             raise NotImplementedError
 
-        #def restart policy update_config
-        def restart_policy_update_config(self, input):
+        #def restart policy update_config TODO: implement this in another class
+        def update_config(self, input):
             raise NotImplementedError
 
-        #return self as dictionary
+        #return self dictionary
         def get_dict(self):
             if(bool(self.deploy)):
+                self.deploy['restart_policy'] = self.restart_policy.get_dict()
+                if('condition' not in self.deploy['restart_policy']):
+                    self.deploy['restart_policy']['condition'] = 'any'
                 return(dict(self.deploy))
             else:
-                raise Exception('INVALID INPUT:{}\nis not a list or dict'.format(input))
+                raise Exception('ERROR: service.deploy is empty')
 
     #initializer
     def __init__(self, name):
@@ -221,7 +246,7 @@ class Service():
             self.service[self.name]['cap_add'] = input
             return True
         else:
-            raise Exception('INVALID INPUT:{}\nis not a list'.format(input))
+            raise Exception('INVALID INPUT: "{}" is not a list'.format(input))
 
     # cap drop
     def cap_drop(self, input):
@@ -229,7 +254,7 @@ class Service():
             self.service[self.name]['cap_drop'] = input
             return True
         else:
-            raise Exception('INVALID INPUT:{}\nis not a list'.format(input))
+            raise Exception('INVALID INPUT: "{}" is not a list'.format(input))
     
     # add cgroup_parent
     def cgroup_parent(self, input):
@@ -244,7 +269,7 @@ class Service():
         if((isinstance(input, str)) or (isinstance(input, list))):
             self.service[self.name]['command'] = input
         else:
-            raise Exception('INVALID INPUT:{}\nis not a string or list'.format(input))
+            raise Exception('INVALID INPUT: "{}" is not a string or list'.format(input))
 
     # add a dictionary with wanted configs
     def configs_add(self, input):
@@ -252,7 +277,7 @@ class Service():
             self.service[self.name]['configs'] = input
             return True
         else:
-            raise Exception('INVALID INPUT:{}\nis not a dictionary'.format(input))
+            raise Exception('INVALID INPUT: "{}" is not a dictionary'.format(input))
 
     # removes configs dictionary
     def configs_remove(self):
@@ -266,7 +291,7 @@ class Service():
         if(isinstance(input, str)):
             self.service[self.name]["container_name"] = input
         else:
-            raise Exception('INVALID INPUT:{}\nis not a string'.format(input))
+            raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
 
     # add credential_spec using file
     def credential_spec_file(self, input):
@@ -275,7 +300,7 @@ class Service():
             if('registry' in self.service[self.name]['credential_spec']):
                 del self.service[self.name]['credential_spec']['registry']
         else:
-            raise Exception('INVALID INPUT:{}\nis not a string'.format(input))
+            raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
     
     # add credential_spec using registry
     def credential_spec_registry(self, input):
@@ -284,19 +309,215 @@ class Service():
             if('file' in self.service[self.name]['credential_spec']):
                 del self.service[self.name]['credential_spec']['file']
         else:
-            raise Exception('INVALID INPUT:{}\nis not a string'.format(input))
+            raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
 
     # add service dependenies
     def depends_on(self, input):
         if(isinstance(input, list)):
             self.service[self.name]["depends_on"] = input
         else:
-            raise Exception('INVALID INPUT:{}\nis not a list'.format(input))
+            raise Exception("INVALID INPUT: '{}' is not a list".format(input))
+    
+    # add devices
+    def devices(self, input):
+        """
+        add devices section to service
+        @type   list
+        @param  List of device mappings.
+        """
+        if(isinstance(input, list)):
+            self.service['devices'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a list".format(input))
+
+    # add dns 
+    def dns(self, input):
+        """
+        add dns section to service
+        @type   str, list
+        @param  Custom DNS servers. Can be a single value or a list.
+        """
+        if((isinstance(input, str)) or (isinstance(input, list))):
+            self.service['dns'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a list or string".format(input))
+
+    # add dns_search
+    def dns_search(self, input):
+        """
+        add dns_search to service
+        @type   str, list
+        @param  Custom DNS search domains. Can be a single value or a list.
+        """
+        if((isinstance(input, str)) or (isinstance(input, list))):
+            self.service['dns_search'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a list or string".format(input))
+    
+    # add entrypoint
+    def entrypoint(self, input):
+        """
+        add entrypoint to service
+        @type   str, list
+        @param  Override the default entrypoint.
+        """
+        if((isinstance(input, str)) or (isinstance(input, list))):
+            self.service['entrypoint'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a list or string".format(input))
+
+    # add env_file
+    def env_file(self, input):
+        """
+        add env_file to service
+        @type   str, list
+        @param  Add environment variables from a file.
+        """
+        if((isinstance(input, str)) or (isinstance(input, list))):
+            self.service['env_file'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a list or string".format(input))
+
+    # add environment
+    def environment(self, input):
+        """
+        add environment to service
+        @type   dict, list
+        @param  Add environment variables. Any boolean values need to be enclosed in quotes.
+        """
+        if((isinstance(input, dict)) or (isinstance(input, list))):
+            self.service['environment'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a dictionary or string".format(input))
+
+    # add expose
+    def expose(self, input):
+        """
+        add expose to service
+        @type   list
+        @param  Expose ports without publishing them to the host machine \
+                - they’ll only be accessible to linked services.
+        """
+        if(isinstance(input, list)):
+            self.service['expose'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a list.".format(input))
+
+    # add external_links
+    def external_links(self, input):
+        """
+        add external_links to service
+        @type   list
+        @param  Link to containers started outside this docker-compose.yml \
+                or even outside of Compose, especially for containers that \
+                provide shared or common services.
+        """
+        if(isinstance(input, list)):
+            self.service['external_links'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a list.".format(input))
+
+    # add extra_hosts
+    def extra_hosts(self, input):
+        """
+        add extra_hosts to service
+        @type   list
+        @param  Add hostname mappings. 
+        """
+        if(isinstance(input, list)):
+            self.service['extra_hosts'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a list.".format(input))
+
+    # add image
+    def image(self, input):
+        """
+        add image to service
+        @type   string
+        @param  Specify the image to start the container from.
+        """
+        if(isinstance(input, str)):
+            self.service['image'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a string.".format(input))
+
+    # enable init
+    def init(self):
+        """
+        set service.init to True
+        """
+        self.service['init'] = 'true'
+
+    # add isolation
+    def isolation(self, input):
+        """
+        add isolation to service
+        @type   string
+        @param  Specify a container’s isolation technology.
+        """
+        if(isinstance(input, str)):
+            self.service['isolation'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a string.".format(input))
+
+    # add labels
+    def labels(self, input):
+        """
+        add labels to service
+        @type   list, dict
+        @param  Add metadata to containers using Docker labels.
+        """
+        if((isinstance(input, dict)) or (isinstance(input, list))):
+            self.service['labels'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a list or dict.".format(input))
+
+    # add logging
+    def logging(self, input):
+        """
+        add logging to service, \
+        full description of logging is needed through input
+        @type   dict
+        @param  Logging configuration for the service.
+        """
+        if(isinstance(input, dict)):
+            self.service['logging'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a dict.".format(input))
+
+    # add network_mode
+    def network_mode(self, input):
+        """
+        add network_mode to service
+        @type   string
+        @param  Network mode.
+        """
+        if(isinstance(input, str)):
+            self.service['network_mode'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a string.".format(input))
+
+    # add networks
+    def networks(self, input):
+        """
+        add networks to service
+        @type   list
+        @param  Networks to join, referencing entries under the \
+                top-level networks key.
+        """
+        if(isinstance(input, list)):
+            self.service['networks'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a list.".format(input))
+
     
     #spit out compose dictionary
     def spit(self):
         if(bool(self.build.get_dict())):
             self.service[self.name]['build'] = self.build.get_dict()
+            if('context' not in self.service[self.name]['build']):
+                del self.service[self.name]['build']
+                raise Exception('ERROR: service.build was defined without a context')
         else:
             del self.service[self.name]['build']
         if(bool(self.deploy.get_dict())):
@@ -304,3 +525,11 @@ class Service():
         else:
             del self.service[self.name]['deploy']
         print(self.service)
+
+if __name__ == "__main__":
+    my_compose = Service('NAME')
+    my_compose.deploy.restart_policy.window('Yes')
+    my_compose.deploy.replicas(6)
+    my_compose.deploy.placement_constraints(['node.role == manager', 'engine.labels.operatingsystem == ubuntu 14.04'])
+    #my_compose.deploy.restart_policy.condition('other')
+    my_compose.spit()
