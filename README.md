@@ -1,16 +1,36 @@
 # DC-wrapper 
-Docker-Compose v:3
-## Use:
-This package is meant to aid in the building of complex docker environments (docker-compose).
-It follows a very simple usage procedure. Example:
+Docker-Compose Wrapper is a python package for building complex docker-compose files quickly and without errors. It only supports Compose file version 3.
+## Usage:
+It follows a very simple usage procedure:
 ```python
-my_compose = Build()
-y.build.context('<file-location>')
+from docker-compose import Compose 
+my_compose = Compose() #create a compose instance
+service_db = Service('db') #create a service instance
+service_db.image('mysql')
+service_db.command('--default-authentication-plugin=mysql_native_password')
+service_db.restart('always')
+service_db.environment({'MYSQL_ROOT_PASSWORD': 'example'})
+service_db.ports(['8080:8080'])
+
+my_compose.add_service(service_db) #add service to compose
+my_compose.make_compose() #output compose
 ```
-cap_add, cap_drop
+The above code snippet will produce the following yaml file:
+```yaml
+services:
+  db:
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    image: mysql
+    ports:
+      - 8080:8080
+    restart: always
+version: '3.7'
+```
 
 ## Missing:
  - service.deploy.rollback_config
  - service.deploy.update_config
  - service.healthcheck
- - service.links -- LEGACY FEATURE
+ - service.links -- LEGACY FEATURE (Not sure if this will ever be added)

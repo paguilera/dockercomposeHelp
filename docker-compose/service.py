@@ -108,7 +108,7 @@ class Service():
                 @param: How long to wait between restart attempts
                 """
                 if(isinstance(input, str)):
-                    self.restart_policy['deplay'] = input
+                    self.restart_policy['delay'] = input
                 else:
                     raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
 
@@ -229,7 +229,7 @@ class Service():
             if(bool(self.deploy)):
                 self.deploy['restart_policy'] = self.restart_policy.get_dict()
                 if('condition' not in self.deploy['restart_policy']):
-                    self.deploy['restart_policy']['condition'] = 'any'
+                    del self.deploy['restart_policy']
                 return(dict(self.deploy))
             else:
                 raise Exception('ERROR: service.deploy is empty')
@@ -292,14 +292,14 @@ class Service():
     # add container_name
     def container_name(self, input):
         if(isinstance(input, str)):
-            self.service[self.name]["container_name"] = input
+            self.service[self.name]['container_name'] = input
         else:
             raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
 
     # add credential_spec using file
     def credential_spec_file(self, input):
         if(isinstance(input, str)):
-            self.service[self.name]["credential_spec"] = {"file":input}
+            self.service[self.name]['credential_spec'] = {"file":input}
             if('registry' in self.service[self.name]['credential_spec']):
                 del self.service[self.name]['credential_spec']['registry']
         else:
@@ -317,7 +317,7 @@ class Service():
     # add service dependenies
     def depends_on(self, input):
         if(isinstance(input, list)):
-            self.service[self.name]["depends_on"] = input
+            self.service[self.name]['depends_on'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a list".format(input))
     
@@ -329,7 +329,7 @@ class Service():
         @param  List of device mappings.
         """
         if(isinstance(input, list)):
-            self.service['devices'] = input
+            self.service[self.name]['devices'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a list".format(input))
 
@@ -341,7 +341,7 @@ class Service():
         @param  Custom DNS servers. Can be a single value or a list.
         """
         if((isinstance(input, str)) or (isinstance(input, list))):
-            self.service['dns'] = input
+            self.service[self.name]['dns'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a list or string".format(input))
 
@@ -353,7 +353,7 @@ class Service():
         @param  Custom DNS search domains. Can be a single value or a list.
         """
         if((isinstance(input, str)) or (isinstance(input, list))):
-            self.service['dns_search'] = input
+            self.service[self.name]['dns_search'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a list or string".format(input))
     
@@ -365,7 +365,7 @@ class Service():
         @param  Override the default entrypoint.
         """
         if((isinstance(input, str)) or (isinstance(input, list))):
-            self.service['entrypoint'] = input
+            self.service[self.name]['entrypoint'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a list or string".format(input))
 
@@ -377,7 +377,7 @@ class Service():
         @param  Add environment variables from a file.
         """
         if((isinstance(input, str)) or (isinstance(input, list))):
-            self.service['env_file'] = input
+            self.service[self.name]['env_file'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a list or string".format(input))
 
@@ -389,7 +389,7 @@ class Service():
         @param  Add environment variables. Any boolean values need to be enclosed in quotes.
         """
         if((isinstance(input, dict)) or (isinstance(input, list))):
-            self.service['environment'] = input
+            self.service[self.name]['environment'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a dictionary or string".format(input))
 
@@ -402,7 +402,19 @@ class Service():
                 - they’ll only be accessible to linked services.
         """
         if(isinstance(input, list)):
-            self.service['expose'] = input
+            self.service[self.name]['expose'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a list.".format(input))
+
+    # add ports
+    def ports(self, input):
+        """
+        add ports to service
+        @type   list
+        @param  Expose ports. specify both ports (HOST:CONTAINER)
+        """
+        if(isinstance(input, list)):
+            self.service[self.name]['ports'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a list.".format(input))
 
@@ -416,7 +428,7 @@ class Service():
                 provide shared or common services.
         """
         if(isinstance(input, list)):
-            self.service['external_links'] = input
+            self.service[self.name]['external_links'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a list.".format(input))
 
@@ -428,7 +440,7 @@ class Service():
         @param  Add hostname mappings. 
         """
         if(isinstance(input, list)):
-            self.service['extra_hosts'] = input
+            self.service[self.name]['extra_hosts'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a list.".format(input))
 
@@ -440,7 +452,7 @@ class Service():
         @param  Specify the image to start the container from.
         """
         if(isinstance(input, str)):
-            self.service['image'] = input
+            self.service[self.name]['image'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a string.".format(input))
 
@@ -449,7 +461,7 @@ class Service():
         """
         set service.init to True
         """
-        self.service['init'] = 'true'
+        self.service[self.name]['init'] = 'true'
 
     # add isolation
     def isolation(self, input):
@@ -459,7 +471,7 @@ class Service():
         @param  Specify a container’s isolation technology.
         """
         if(isinstance(input, str)):
-            self.service['isolation'] = input
+            self.service[self.name]['isolation'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a string.".format(input))
 
@@ -471,7 +483,7 @@ class Service():
         @param  Add metadata to containers using Docker labels.
         """
         if((isinstance(input, dict)) or (isinstance(input, list))):
-            self.service['labels'] = input
+            self.service[self.name]['labels'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a list or dict.".format(input))
 
@@ -484,7 +496,7 @@ class Service():
         @param  Logging configuration for the service.
         """
         if(isinstance(input, dict)):
-            self.service['logging'] = input
+            self.service[self.name]['logging'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a dict.".format(input))
 
@@ -496,7 +508,7 @@ class Service():
         @param  Network mode.
         """
         if(isinstance(input, str)):
-            self.service['network_mode'] = input
+            self.service[self.name]['network_mode'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a string.".format(input))
 
@@ -509,7 +521,35 @@ class Service():
                 top-level networks key.
         """
         if((isinstance(input, list) or (isinstance(input, dict)))):
-            self.service['networks'] = input
+            self.service[self.name]['networks'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a list or dictionary.".format(input))
+
+    # add restart
+    def restart(self, input='"no"'):
+        """
+        add restart to service
+        @type   str
+        @param  What circumstances to restart the container on
+        """
+        if(isinstance(input, str)):
+            if(input in ['"no"','always', 'always', 'unless-stopped']):
+                self.service[self.name]['restart'] = input
+            else:
+                raise Exception("INVALID INPUT: '{}' is not One of 'no','always', 'always', 'unless-stopped'.".format(input))
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a string.".format(input))
+
+    # add volumes
+    def volumes(self, input):
+        """
+        add volumes entry to service
+        @type   list
+        @param  Mount host paths or named volumes, \
+                specified as sub-options to a service.
+        """
+        if(isinstance(input, list)):
+            self.service[self.name]['volumes'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a list or dictionary.".format(input))
 
@@ -519,6 +559,7 @@ class Service():
         Get service name
         """
         return(self.name)
+    
     #spit out compose dictionary
     def spit(self):
         if(bool(self.build.get_dict())):
@@ -533,11 +574,3 @@ class Service():
         else:
             del self.service[self.name]['deploy']
         return(dict(self.service))
-
-if __name__ == "__main__":
-    my_compose = Service('reddit')
-    my_compose.deploy.restart_policy.window('Yes')
-    my_compose.deploy.replicas(6)
-    my_compose.deploy.placement_constraints(['node.role == manager', 'engine.labels.operatingsystem == ubuntu 14.04'])
-    #my_compose.deploy.restart_policy.condition('other')
-    my_compose.spit()
