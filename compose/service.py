@@ -1,5 +1,8 @@
 # class for different generating a single service
 class Service():
+    """
+    Service manages the creation of a service.
+    """
 
     # subclass build
     class Build():
@@ -500,17 +503,22 @@ class Service():
     # add networks
     def networks(self, input):
         """
-        add networks to service
-        @type   list
+        add networks to service, use a dict for more options i.ei ALIASSES
+        @type   list, dict
         @param  Networks to join, referencing entries under the \
                 top-level networks key.
         """
-        if(isinstance(input, list)):
+        if((isinstance(input, list) or (isinstance(input, dict)))):
             self.service['networks'] = input
         else:
-            raise Exception("INVALID INPUT: '{}' is not a list.".format(input))
+            raise Exception("INVALID INPUT: '{}' is not a list or dictionary.".format(input))
 
-    
+    # get name
+    def get_name(self):
+        """
+        Get service name
+        """
+        return(self.name)
     #spit out compose dictionary
     def spit(self):
         if(bool(self.build.get_dict())):
@@ -524,10 +532,10 @@ class Service():
             self.service[self.name]['deploy'] = self.deploy.get_dict()
         else:
             del self.service[self.name]['deploy']
-        print(self.service)
+        return(dict(self.service))
 
 if __name__ == "__main__":
-    my_compose = Service('NAME')
+    my_compose = Service('reddit')
     my_compose.deploy.restart_policy.window('Yes')
     my_compose.deploy.replicas(6)
     my_compose.deploy.placement_constraints(['node.role == manager', 'engine.labels.operatingsystem == ubuntu 14.04'])

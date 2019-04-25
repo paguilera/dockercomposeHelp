@@ -10,7 +10,7 @@ y.build.context('<file-location>')
 cap_add, cap_drop
 
 ## Missing:
-service.deploy.rollback_config
-service.deploy.update_config
-service.healthcheck
-service.links -- LEGACY FEATURE
+ - service.deploy.rollback_config
+ - service.deploy.update_config
+ - service.healthcheck
+ - service.links -- LEGACY FEATURE
