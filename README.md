@@ -3,7 +3,7 @@ Docker-Compose Wrapper is a python package for building complex docker-compose f
 ## Usage:
 It follows a very simple usage procedure:
 ```python
-from docker-compose import Compose 
+from dockerCompose import Compose 
 my_compose = Compose() #create a compose instance
 service_db = Service('db') #create a service instance
 service_db.image('mysql')
