@@ -1,9 +1,0 @@
-README.md
-setup.py
-dockerCompose/__init__.py
-dockerCompose/compose.py
-dockerCompose/service.py
-dockerCompose.egg-info/PKG-INFO
-dockerCompose.egg-info/SOURCES.txt
-dockerCompose.egg-info/dependency_links.txt
-dockerCompose.egg-info/top_level.txt

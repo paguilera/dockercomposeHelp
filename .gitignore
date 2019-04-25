@@ -1,2 +1,7 @@
 *__pycache__
 *__init__.py
+build
+dist
+*.pyc
+*$py.class
+*.egg-info
