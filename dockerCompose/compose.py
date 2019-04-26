@@ -278,28 +278,37 @@ class Service():
     
     # add command
     def command(self, input):
+        """
+        command for the container to run
+        @type   str, list
+        @param  Override the default command.
+        """
         if((isinstance(input, str)) or (isinstance(input, list))):
             self.service[self.name]['command'] = input
         else:
             raise Exception('INVALID INPUT: "{}" is not a string or list'.format(input))
 
+    #TODO: add long syntax of this option
     # add a dictionary with wanted configs
-    def configs_add(self, input):
-        if(isinstance(input, dict)):
+    def configs(self, input):
+        """
+        reference configs this service will use, only short syntax is available.
+        @type   list
+        @param  Grant access to configs.
+        """
+        if(isinstance(input, list)):
             self.service[self.name]['configs'] = input
             return True
         else:
-            raise Exception('INVALID INPUT: "{}" is not a dictionary'.format(input))
-
-    # removes configs dictionary
-    def configs_remove(self):
-        if('configs' not in self.service[self.name]):
-            raise Exception('service.configs does not exist. Nothing to remove.')
-        else:
-            del self.service[self.name]['configs']
+            raise Exception('INVALID INPUT: "{}" is not a list'.format(input))
 
     # add container_name
     def container_name(self, input):
+        """
+        Add container_name key and value to this service
+        @type   string
+        @param  Specify a custom container name, rather than a generated default name.
+        """
         if(isinstance(input, str)):
             self.service[self.name]['container_name'] = input
         else:
@@ -307,6 +316,11 @@ class Service():
 
     # add credential_spec using file
     def credential_spec_file(self, input):
+        """
+        Add credential_spec file key and value to this service
+        @type   string
+        @param  Configure the credential spec for managed service account.
+        """
         if(isinstance(input, str)):
             self.service[self.name]['credential_spec'] = {"file":input}
             if('registry' in self.service[self.name]['credential_spec']):
@@ -316,6 +330,11 @@ class Service():
     
     # add credential_spec using registry
     def credential_spec_registry(self, input):
+        """
+        Add credential_spec registry key and value to this service
+        @type   string
+        @param  Configure the credential spec for managed service account.
+        """
         if(isinstance(input, str)):
             self.service[self.name]['credential_spec'] = {"registry":input}
             if('file' in self.service[self.name]['credential_spec']):
@@ -325,6 +344,11 @@ class Service():
 
     # add service dependenies
     def depends_on(self, input):
+        """
+        add depends_on key to service
+        @type   list
+        @param  Express dependencies of this services to another
+        """
         if(isinstance(input, list)):
             self.service[self.name]['depends_on'] = input
         else:
@@ -569,8 +593,11 @@ class Service():
         """
         return(self.name)
     
-    #spit out compose dictionary
+    #spit out service dictionary
     def spit(self):
+        """
+        Output the description (dictionary) of this service
+        """
         if(bool(self.build.get_dict())):
             self.service[self.name]['build'] = self.build.get_dict()
             if('context' not in self.service[self.name]['build']):
@@ -601,6 +628,18 @@ class Compose():
         @param  service object
         """
         self.compose['services'].update(input.spit())
+
+    # add configs to compose
+    def create_config(self,input):
+        """
+        add a dictionary with wanted config options to compose
+        @type   dict
+        @param  a dictionary defining the config attributes
+        """
+        if(isinstance(input, dict)):
+            self.compose['configs'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a dictionary.".format(input))
 
     # make compose file
     def make_compose(self, path=None):
