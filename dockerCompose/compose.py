@@ -24,6 +24,12 @@ class Service():
 
         # add context
         def context(self, input):
+            """
+            add context key and value to service.build
+            @type   string
+            @param  Either a path to a directory containing \
+                    a Dockerfile, or a url to a git repository.
+            """
             if(isinstance(input, str)):
                 self.build['context'] = input
                 return True
@@ -32,6 +38,11 @@ class Service():
 
         # add dockerfile
         def dockerfile(self, input):
+            """
+            add dockerfile key and value to service.build
+            @type   string
+            @param  Alternate Dockerfile.
+            """
             if(isinstance(input, str)):
                 self.build['dockerfile'] = input
                 return True
@@ -40,6 +51,12 @@ class Service():
 
         # add args
         def args(self, input):
+            """
+            add args key and value to service.build
+            @type   list
+            @param  Add build arguments, which are environment \
+                    variables accessible only during the build process.
+            """
             if(isinstance(input, list)):
                 self.build['args'] = input
                 return True
@@ -48,6 +65,12 @@ class Service():
 
         # add cache_from
         def cache_from(self, input):
+            """
+            add cache_from key and value to service.build
+            @type   list
+            @param  A list of images that the engine uses for \
+                    cache resolution.
+            """
             if(isinstance(input, list)):
                 self.build['cache_from'] = input
                 return True
@@ -56,6 +79,11 @@ class Service():
 
         # add labels
         def labels(self, input):
+            """
+            add labels key and value to service.build
+            @type   list, dict
+            @param  Add metadata to the resulting image using Docker labels.
+            """
             if(isinstance(input, list) or isinstance(input, dict)):
                 self.build['labels'] = input
                 return True
@@ -64,6 +92,12 @@ class Service():
 
         # add wshm_size
         def shm_size(self, input):
+            """
+            add smh_size key and value to service.build
+            @type   int, string
+            @param  Set the size of the /dev/shm partition \
+                    for this build’s containers.
+            """
             if(isinstance(input, int) or isinstance(input, str)):
                 self.build['shm_size'] = input
                 return True
@@ -72,6 +106,11 @@ class Service():
 
         # add target
         def target(self, input):
+            """
+            add target key and value to service.build
+            @type   string
+            @param  Build the specified stage.
+            """
             if(isinstance(input, str)):
                 self.build['target'] = input
                 return True
