@@ -13,6 +13,91 @@ class Service():
     Service manages the creation of a service.
     """
 
+    #subclass healthcheck
+    class HealthCheck():
+        """
+        service.HealthCheck
+        """
+        #initializer
+        def __init__(self):
+            self.healthcheck = {}
+
+        #disable heathcheck
+        def disable(self):
+            """
+            To disable any default healthcheck set by the image
+            """
+            self.healthcheck = {'disable':'true'}
+
+        #add healthcheck test
+        def test(self, input):
+            """
+            add test key and value to service.healthcheck
+            @type   string, list
+            @param  Configure a check that’s run to determine whether \
+                    or not containers for this service are “healthy”.
+            """
+            if((isinstance(input, list)) or (isinstance(input, str))):
+                self.healthcheck['test'] = input
+            else:
+                raise Exception('INVALID INPUT: "{}" is not a string or list'.format(input))
+
+        #add interval
+        def interval(self, input):
+            """
+            add interval key and value to service.healthcheck
+            @type   string
+            @param  The healthcheck will first run interval seconds \
+                    after the container is started, and then again interval \
+                    seconds after each previous check completes.
+            """
+            if(isinstance(input, str)):
+                self.healthcheck['interval'] = input
+            else:
+                raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
+
+        #add timeout
+        def timeout(self, input):
+            """
+            add timeout key and value to service.healthcheck
+            @type   string
+            @param  Lenght of time the healthcheck command will be run before it is considered failed.
+            """
+            if(isinstance(input, str)):
+                self.healthcheck['timeout'] = input
+            else:
+                raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
+
+        #add retries
+        def retries(self, input):
+            """
+            add retries key and value to service.healthcheck
+            @type   int
+            @param  Number of failures before the container is \
+                    considered unhealthy
+            """
+            if(isinstance(input, int)):
+                self.healthcheck['retries'] = input
+            else:
+                raise Exception('INVALID INPUT: "{}" is not an integer'.format(input))
+
+        #add start_period
+        def start_period(self, input):
+            """
+            add start_period key and value to service.healthcheck
+            @type   string
+            @param  start_period provides initialization time for \
+                    containers that need time to boot.
+            """
+            if(isinstance(input, str)):
+                self.healthcheck['start_period'] = input
+            else:
+                raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
+
+        #return self as dictionary
+        def get_dict(self):
+            return(dict(self.healthcheck))
+
     # subclass build
     class Build():
         """
@@ -24,6 +109,12 @@ class Service():
 
         # add context
         def context(self, input):
+            """
+            add context key and value to service.build
+            @type   string
+            @param  Either a path to a directory containing \
+                a Dockerfile, or a url to a git repository.
+            """
             if(isinstance(input, str)):
                 self.build['context'] = input
                 return True
@@ -32,6 +123,11 @@ class Service():
 
         # add dockerfile
         def dockerfile(self, input):
+            """
+            add dockerfile key and value to service.build
+            @type   string
+            @param  Alternate Dockerfile.
+            """
             if(isinstance(input, str)):
                 self.build['dockerfile'] = input
                 return True
@@ -40,6 +136,12 @@ class Service():
 
         # add args
         def args(self, input):
+            """
+            add args key and value to service.build
+            @type   list
+            @param  Add build arguments, which are environment \
+                    variables accessible only during the build process.
+            """
             if(isinstance(input, list)):
                 self.build['args'] = input
                 return True
@@ -48,6 +150,12 @@ class Service():
 
         # add cache_from
         def cache_from(self, input):
+            """
+            add cache_from key and value to service.build
+            @type   list
+            @param  A list of images that the engine uses for \
+                    cache resolution.
+            """
             if(isinstance(input, list)):
                 self.build['cache_from'] = input
                 return True
@@ -56,6 +164,11 @@ class Service():
 
         # add labels
         def labels(self, input):
+            """
+            add labels key and value to service.build
+            @type   list, dict
+            @param  Add metadata to the resulting image using Docker labels.
+            """
             if(isinstance(input, list) or isinstance(input, dict)):
                 self.build['labels'] = input
                 return True
@@ -64,6 +177,12 @@ class Service():
 
         # add wshm_size
         def shm_size(self, input):
+            """
+            add smh_size key and value to service.build
+            @type   int, string
+            @param  Set the size of the /dev/shm partition \
+                    for this build’s containers.
+            """
             if(isinstance(input, int) or isinstance(input, str)):
                 self.build['shm_size'] = input
                 return True
@@ -72,6 +191,11 @@ class Service():
 
         # add target
         def target(self, input):
+            """
+            add target key and value to service.build
+            @type   string
+            @param  Build the specified stage.
+            """
             if(isinstance(input, str)):
                 self.build['target'] = input
                 return True
@@ -82,6 +206,7 @@ class Service():
         def get_dict(self):
             return(dict(self.build))
 
+    # subclass deploy
     class Deploy():
         """
         service.deploy
@@ -160,22 +285,42 @@ class Service():
 
         #add context
         def endpoint_mode(self, input):
-            if(isinstance(input, str)):
-                self.deploy['endpoint_mode'] = input
-                return True
+            """
+            add endpoint_mode key and value to service.deploy
+            @type   string
+            @param  Specify a service discovery method for \
+                    external clients connecting to a swarm.
+            """
+            if(input in ['vip', 'dnsrr']):
+                if(isinstance(input, str)):
+                    self.deploy['endpoint_mode'] = input
+                    return True
+                else:
+                    raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
             else:
-                raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
-
+                raise Exception('INVALID INPUT: "{}" is not One of "vip" or "dnsrr"'.format(input))
         #add labels
         def labels(self, input):
+            """
+            add labels key and value to service.deploy
+            @type   list, dict
+            @param  Specify labels for the service. \
+                    These labels are only set on the service, \
+                    and not on any containers for the service.
+            """
             if(isinstance(input, list) or isinstance(input, dict)):
                 self.deploy['labels'] = input
                 return True
             else:
                 raise Exception('INVALID INPUT: "{}" is not a list or dict'.format(input))
-        
+
         #add placement, constraints
         def placement_constraints(self, input):
+            """
+            add placement.constraints key and value to service.deploy
+            @type   list
+            @param  Specify placement constraints.
+            """
             if(isinstance(input, list)):
                 self.deploy['placement'] = {}
                 self.deploy['placement']['constraints'] = input
@@ -184,6 +329,11 @@ class Service():
 
         #add placement preference
         def placement_preference(self, input):
+            """
+            add placement.preferences key and value to service.deploy
+            @type   list
+            @param  Specify placement preferences.
+            """
             if(isinstance(input, list)):
                 self.deploy['placement'] = {}
                 self.deploy['placement']['preference'] = input
@@ -192,13 +342,38 @@ class Service():
 
         #add replicas
         def replicas(self, input):
+            """
+            add replicas key and value to service.deploy
+            @type   int
+            @param  If the service is replicated (default), specify the number \
+                    of containers that should be running at any given time.
+            """
             if(isinstance(input, int)):
                 self.deploy['replicas'] = input
             else:
                 raise Exception('INVALID INPUT: "{}" is not an integer'.format(input))
 
+        #add deploy.global
+        def mode(self, input):
+            """
+            add mode key and value to service.deploy
+            @type   string or int (if replicated, specify number of replicas)
+            @param  Either global (exactly one container per swarm node) \
+                    or replicated (a specified number of containers).
+            """
+            if((isinstance(input, str)) and (input == 'global')):
+                self.deploy['mode'] = input
+            elif(isinstance(input, int)):
+                self.deploy['mode'] = 'replicated'
+                self.replicas(input)
+
         #add resources limit cpu
         def resources_limits_cpu(self, input):
+            """
+            add limits.memory key and value to service.deploy
+            @type   string
+            @param  Configures resource constraints.
+            """
             if(isinstance(input, str)):
                 self.deploy['resources']['limits']['cpus'] = input
             else:
@@ -206,6 +381,11 @@ class Service():
 
         #add resources limit memory
         def resources_limits_memory(self, input):
+            """
+            add limits.memory key and value to service.deploy
+            @type   string
+            @param  Configures resource constraints.
+            """
             if(isinstance(input, str)):
                 self.deploy['resources']['limits']['memory'] = input
             else:
@@ -213,28 +393,41 @@ class Service():
 
         #add resources reservations cpu
         def resources_reservations_cpu(self, input):
+            """
+            add reservations.cpu key and value to service.deploy
+            @type   string
+            @param  Configures resource constraints.
+            """
             if(isinstance(input, str)):
-                self.deploy['resources']['limits']['cpus'] = input
+                self.deploy['resources']['reservations']['cpus'] = input
             else:
                 raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
 
         #add resources reservations memory
         def resources_reservations_memory(self, input):
+            """
+            add reservations.memory key and value to service.deploy
+            @type   string
+            @param  Configures resource constraints.
+            """
             if(isinstance(input, str)):
-                self.deploy['resources']['limits']['memory'] = input
+                self.deploy['resources']['reservations']['memory'] = input
             else:
                 raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
 
-        #def restart policy rollback_config TODO: implement this in another class
+        #def restart policy rollback_config TODO: implement
         def rollback_config(self, input):
             raise NotImplementedError
 
-        #def restart policy update_config TODO: implement this in another class
+        #def restart policy update_config TODO: implement
         def update_config(self, input):
             raise NotImplementedError
 
         #return self dictionary
         def get_dict(self):
+            """
+            get deploy dictionary
+            """
             if(bool(self.deploy)):
                 self.deploy['restart_policy'] = self.restart_policy.get_dict()
                 if('condition' not in self.deploy['restart_policy']):
@@ -249,11 +442,18 @@ class Service():
         self.service = {name:{}}
         self.build = self.Build()
         self.deploy = self.Deploy()
+        self.healthcheck = self.HealthCheck()
         self.service[self.name]['build'] = self.build
         self.service[self.name]['deploy'] = self.deploy
+        self.service[self.name]['healthcheck'] = self.healthcheck
 
     # add cap
     def cap_add(self, input):
+        """
+        add cap_add key and value to service
+        @type   list
+        @param  Add container capabilities. 
+        """
         if(isinstance(input, list)):
             self.service[self.name]['cap_add'] = input
             return True
@@ -262,6 +462,11 @@ class Service():
 
     # cap drop
     def cap_drop(self, input):
+        """
+        add cap_drop key and value to service
+        @type   list
+        @param  Drop container capabilities. 
+        """
         if(isinstance(input, list)):
             self.service[self.name]['cap_drop'] = input
             return True
@@ -270,6 +475,11 @@ class Service():
     
     # add cgroup_parent
     def cgroup_parent(self, input):
+        """
+        add cgroup_parent key and value to service
+        @type   string
+        @param  Specify an optional parent cgroup for the container.
+        """
         if(isinstance(input, str)):
             self.service[self.name]['cgroup_parent'] = input
             return True
@@ -278,28 +488,37 @@ class Service():
     
     # add command
     def command(self, input):
+        """
+        command for the container to run
+        @type   str, list
+        @param  Override the default command.
+        """
         if((isinstance(input, str)) or (isinstance(input, list))):
             self.service[self.name]['command'] = input
         else:
             raise Exception('INVALID INPUT: "{}" is not a string or list'.format(input))
 
+    #TODO: add long syntax of this option
     # add a dictionary with wanted configs
-    def configs_add(self, input):
-        if(isinstance(input, dict)):
+    def configs(self, input):
+        """
+        reference configs this service will use, only short syntax is available.
+        @type   list
+        @param  Grant access to configs.
+        """
+        if(isinstance(input, list)):
             self.service[self.name]['configs'] = input
             return True
         else:
-            raise Exception('INVALID INPUT: "{}" is not a dictionary'.format(input))
-
-    # removes configs dictionary
-    def configs_remove(self):
-        if('configs' not in self.service[self.name]):
-            raise Exception('service.configs does not exist. Nothing to remove.')
-        else:
-            del self.service[self.name]['configs']
+            raise Exception('INVALID INPUT: "{}" is not a list'.format(input))
 
     # add container_name
     def container_name(self, input):
+        """
+        Add container_name key and value to this service
+        @type   string
+        @param  Specify a custom container name, rather than a generated default name.
+        """
         if(isinstance(input, str)):
             self.service[self.name]['container_name'] = input
         else:
@@ -307,6 +526,11 @@ class Service():
 
     # add credential_spec using file
     def credential_spec_file(self, input):
+        """
+        Add credential_spec file key and value to this service
+        @type   string
+        @param  Configure the credential spec for managed service account.
+        """
         if(isinstance(input, str)):
             self.service[self.name]['credential_spec'] = {"file":input}
             if('registry' in self.service[self.name]['credential_spec']):
@@ -316,6 +540,11 @@ class Service():
     
     # add credential_spec using registry
     def credential_spec_registry(self, input):
+        """
+        Add credential_spec registry key and value to this service
+        @type   string
+        @param  Configure the credential spec for managed service account.
+        """
         if(isinstance(input, str)):
             self.service[self.name]['credential_spec'] = {"registry":input}
             if('file' in self.service[self.name]['credential_spec']):
@@ -325,6 +554,11 @@ class Service():
 
     # add service dependenies
     def depends_on(self, input):
+        """
+        add depends_on key to service
+        @type   list
+        @param  Express dependencies of this services to another
+        """
         if(isinstance(input, list)):
             self.service[self.name]['depends_on'] = input
         else:
@@ -569,8 +803,11 @@ class Service():
         """
         return(self.name)
     
-    #spit out compose dictionary
+    #spit out service dictionary
     def spit(self):
+        """
+        Output the description (dictionary) of this service
+        """
         if(bool(self.build.get_dict())):
             self.service[self.name]['build'] = self.build.get_dict()
             if('context' not in self.service[self.name]['build']):
@@ -578,10 +815,20 @@ class Service():
                 raise Exception('ERROR: service.build was defined without a context')
         else:
             del self.service[self.name]['build']
+
         if(bool(self.deploy.get_dict())):
             self.service[self.name]['deploy'] = self.deploy.get_dict()
         else:
             del self.service[self.name]['deploy']
+
+        if(bool(self.healthcheck.get_dict())):
+            self.service[self.name]['healthcheck'] = self.healthcheck.get_dict()
+            if('test' not in self.service[self.name]['healthcheck']):
+                del self.service[self.name]['healthcheck']
+                raise Exception('ERROR: service.healthcheck was defined without a test')
+        else:
+            del self.service[self.name]['healthcheck']
+
         return(dict(self.service))
 
 # class for managing all services
@@ -601,6 +848,18 @@ class Compose():
         @param  service object
         """
         self.compose['services'].update(input.spit())
+
+    # add configs to compose
+    def create_config(self,input):
+        """
+        add a dictionary with wanted config options to compose
+        @type   dict
+        @param  a dictionary defining the config attributes
+        """
+        if(isinstance(input, dict)):
+            self.compose['configs'] = input
+        else:
+            raise Exception("INVALID INPUT: '{}' is not a dictionary.".format(input))
 
     # make compose file
     def make_compose(self, path=None):
