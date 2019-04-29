@@ -13,6 +13,91 @@ class Service():
     Service manages the creation of a service.
     """
 
+    #subclass healthcheck
+    class HealthCheck():
+        """
+        service.HealthCheck
+        """
+        #initializer
+        def __init__(self):
+            self.healthcheck = {}
+
+        #disable heathcheck
+        def disable(self):
+            """
+            To disable any default healthcheck set by the image
+            """
+            self.healthcheck = {'disable':'true'}
+
+        #add healthcheck test
+        def test(self, input):
+            """
+            add test key and value to service.healthcheck
+            @type   string, list
+            @param  Configure a check that’s run to determine whether \
+                    or not containers for this service are “healthy”.
+            """
+            if((isinstance(input, list)) or (isinstance(input, str))):
+                self.healthcheck['test'] = input
+            else:
+                raise Exception('INVALID INPUT: "{}" is not a string or list'.format(input))
+
+        #add interval
+        def interval(self, input):
+            """
+            add interval key and value to service.healthcheck
+            @type   string
+            @param  The healthcheck will first run interval seconds \
+                    after the container is started, and then again interval \
+                    seconds after each previous check completes.
+            """
+            if(isinstance(input, str)):
+                self.healthcheck['interval'] = input
+            else:
+                raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
+
+        #add timeout
+        def timeout(self, input):
+            """
+            add timeout key and value to service.healthcheck
+            @type   string
+            @param  Lenght of time the healthcheck command will be run before it is considered failed.
+            """
+            if(isinstance(input, str)):
+                self.healthcheck['timeout'] = input
+            else:
+                raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
+
+        #add retries
+        def retries(self, input):
+            """
+            add retries key and value to service.healthcheck
+            @type   int
+            @param  Number of failures before the container is \
+                    considered unhealthy
+            """
+            if(isinstance(input, int)):
+                self.healthcheck['retries'] = input
+            else:
+                raise Exception('INVALID INPUT: "{}" is not an integer'.format(input))
+
+        #add start_period
+        def start_period(self, input):
+            """
+            add start_period key and value to service.healthcheck
+            @type   string
+            @param  start_period provides initialization time for \
+                    containers that need time to boot.
+            """
+            if(isinstance(input, str)):
+                self.healthcheck['start_period'] = input
+            else:
+                raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
+
+        #return self as dictionary
+        def get_dict(self):
+            return(dict(self.healthcheck))
+
     # subclass build
     class Build():
         """
@@ -28,7 +113,7 @@ class Service():
             add context key and value to service.build
             @type   string
             @param  Either a path to a directory containing \
-                    a Dockerfile, or a url to a git repository.
+                a Dockerfile, or a url to a git repository.
             """
             if(isinstance(input, str)):
                 self.build['context'] = input
@@ -121,6 +206,7 @@ class Service():
         def get_dict(self):
             return(dict(self.build))
 
+    # subclass deploy
     class Deploy():
         """
         service.deploy
@@ -356,8 +442,10 @@ class Service():
         self.service = {name:{}}
         self.build = self.Build()
         self.deploy = self.Deploy()
+        self.healthcheck = self.HealthCheck()
         self.service[self.name]['build'] = self.build
         self.service[self.name]['deploy'] = self.deploy
+        self.service[self.name]['healthcheck'] = self.healthcheck
 
     # add cap
     def cap_add(self, input):
@@ -727,10 +815,20 @@ class Service():
                 raise Exception('ERROR: service.build was defined without a context')
         else:
             del self.service[self.name]['build']
+
         if(bool(self.deploy.get_dict())):
             self.service[self.name]['deploy'] = self.deploy.get_dict()
         else:
             del self.service[self.name]['deploy']
+
+        if(bool(self.healthcheck.get_dict())):
+            self.service[self.name]['healthcheck'] = self.healthcheck.get_dict()
+            if('test' not in self.service[self.name]['healthcheck']):
+                del self.service[self.name]['healthcheck']
+                raise Exception('ERROR: service.healthcheck was defined without a test')
+        else:
+            del self.service[self.name]['healthcheck']
+
         return(dict(self.service))
 
 # class for managing all services
