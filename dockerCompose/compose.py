@@ -160,22 +160,42 @@ class Service():
 
         #add context
         def endpoint_mode(self, input):
-            if(isinstance(input, str)):
-                self.deploy['endpoint_mode'] = input
-                return True
+            """
+            add endpoint_mode key and value to service.deploy
+            @type   string
+            @param  Specify a service discovery method for \
+                    external clients connecting to a swarm.
+            """
+            if(input in ['vip', 'dnsrr']):
+                if(isinstance(input, str)):
+                    self.deploy['endpoint_mode'] = input
+                    return True
+                else:
+                    raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
             else:
-                raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
-
+                raise Exception('INVALID INPUT: "{}" is not One of "vip" or "dnsrr"'.format(input))
         #add labels
         def labels(self, input):
+            """
+            add labels key and value to service.deploy
+            @type   list, dict
+            @param  Specify labels for the service. \
+                    These labels are only set on the service, \
+                    and not on any containers for the service.
+            """
             if(isinstance(input, list) or isinstance(input, dict)):
                 self.deploy['labels'] = input
                 return True
             else:
                 raise Exception('INVALID INPUT: "{}" is not a list or dict'.format(input))
-        
+
         #add placement, constraints
         def placement_constraints(self, input):
+            """
+            add placement.constraints key and value to service.deploy
+            @type   list
+            @param  Specify placement constraints.
+            """
             if(isinstance(input, list)):
                 self.deploy['placement'] = {}
                 self.deploy['placement']['constraints'] = input
@@ -184,6 +204,11 @@ class Service():
 
         #add placement preference
         def placement_preference(self, input):
+            """
+            add placement.preferences key and value to service.deploy
+            @type   list
+            @param  Specify placement preferences.
+            """
             if(isinstance(input, list)):
                 self.deploy['placement'] = {}
                 self.deploy['placement']['preference'] = input
@@ -192,13 +217,38 @@ class Service():
 
         #add replicas
         def replicas(self, input):
+            """
+            add replicas key and value to service.deploy
+            @type   int
+            @param  If the service is replicated (default), specify the number \
+                    of containers that should be running at any given time.
+            """
             if(isinstance(input, int)):
                 self.deploy['replicas'] = input
             else:
                 raise Exception('INVALID INPUT: "{}" is not an integer'.format(input))
 
+        #add deploy.global
+        def mode(self, input):
+            """
+            add mode key and value to service.deploy
+            @type   string or int (if replicated, specify number of replicas)
+            @param  Either global (exactly one container per swarm node) \
+                    or replicated (a specified number of containers).
+            """
+            if((isinstance(input, str)) and (input == 'global')):
+                self.deploy['mode'] = input
+            elif(isinstance(input, int)):
+                self.deploy['mode'] = 'replicated'
+                self.replicas(input)
+
         #add resources limit cpu
         def resources_limits_cpu(self, input):
+            """
+            add limits.memory key and value to service.deploy
+            @type   string
+            @param  Configures resource constraints.
+            """
             if(isinstance(input, str)):
                 self.deploy['resources']['limits']['cpus'] = input
             else:
@@ -206,6 +256,11 @@ class Service():
 
         #add resources limit memory
         def resources_limits_memory(self, input):
+            """
+            add limits.memory key and value to service.deploy
+            @type   string
+            @param  Configures resource constraints.
+            """
             if(isinstance(input, str)):
                 self.deploy['resources']['limits']['memory'] = input
             else:
@@ -213,28 +268,41 @@ class Service():
 
         #add resources reservations cpu
         def resources_reservations_cpu(self, input):
+            """
+            add reservations.cpu key and value to service.deploy
+            @type   string
+            @param  Configures resource constraints.
+            """
             if(isinstance(input, str)):
-                self.deploy['resources']['limits']['cpus'] = input
+                self.deploy['resources']['reservations']['cpus'] = input
             else:
                 raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
 
         #add resources reservations memory
         def resources_reservations_memory(self, input):
+            """
+            add reservations.memory key and value to service.deploy
+            @type   string
+            @param  Configures resource constraints.
+            """
             if(isinstance(input, str)):
-                self.deploy['resources']['limits']['memory'] = input
+                self.deploy['resources']['reservations']['memory'] = input
             else:
                 raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
 
-        #def restart policy rollback_config TODO: implement this in another class
+        #def restart policy rollback_config TODO: implement
         def rollback_config(self, input):
             raise NotImplementedError
 
-        #def restart policy update_config TODO: implement this in another class
+        #def restart policy update_config TODO: implement
         def update_config(self, input):
             raise NotImplementedError
 
         #return self dictionary
         def get_dict(self):
+            """
+            get deploy dictionary
+            """
             if(bool(self.deploy)):
                 self.deploy['restart_policy'] = self.restart_policy.get_dict()
                 if('condition' not in self.deploy['restart_policy']):
@@ -254,6 +322,11 @@ class Service():
 
     # add cap
     def cap_add(self, input):
+        """
+        add cap_add key and value to service
+        @type   list
+        @param  Add container capabilities. 
+        """
         if(isinstance(input, list)):
             self.service[self.name]['cap_add'] = input
             return True
@@ -262,6 +335,11 @@ class Service():
 
     # cap drop
     def cap_drop(self, input):
+        """
+        add cap_drop key and value to service
+        @type   list
+        @param  Drop container capabilities. 
+        """
         if(isinstance(input, list)):
             self.service[self.name]['cap_drop'] = input
             return True
@@ -270,6 +348,11 @@ class Service():
     
     # add cgroup_parent
     def cgroup_parent(self, input):
+        """
+        add cgroup_parent key and value to service
+        @type   string
+        @param  Specify an optional parent cgroup for the container.
+        """
         if(isinstance(input, str)):
             self.service[self.name]['cgroup_parent'] = input
             return True
