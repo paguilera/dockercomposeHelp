@@ -1,9 +1,9 @@
 # DC-wrapper 
-Docker-Compose Wrapper is a python package for building complex docker-compose files quickly and without errors. It only supports Compose file version 3.
+dockercomposeHelp is a python package for building complex docker-compose files quickly and without errors. It only supports Compose file version 3.
 ## Usage:
 It follows a very simple usage procedure:
 ```python
-from dockerCompose.compose import *
+from dockerCompose.compose import Compose
 my_compose = Compose() #create a compose instance
 service_db = Service('db') #create a service instance
 service_db.image('mysql')
@@ -29,8 +29,17 @@ services:
 version: '3.7'
 ```
 
-## Missing:
+## To be added:
  - service.deploy.rollback_config
  - service.deploy.update_config
- - service.healthcheck
- - service.links -- LEGACY FEATURE (Not sure if this will ever be added)
+ - service.pid
+ - service.secrets
+ - service.security_opt
+ - service.stop_grace_period
+ - service.stop_signal
+ - service.sysctls
+ - service.tmpfs
+ - service.ulimits
+ - service.userns_mode
+## Unsupported:
+ - service.links -- LEGACY FEATURE
