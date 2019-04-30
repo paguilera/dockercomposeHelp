@@ -1,4 +1,4 @@
-# DC-wrapper 
+# dockercomposeHelp
 dockercomposeHelp is a python package for building complex docker-compose files quickly and without errors. It only supports Compose file version 3.
 ## Usage:
 It follows a very simple usage procedure:

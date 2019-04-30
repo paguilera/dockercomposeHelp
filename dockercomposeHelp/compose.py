@@ -269,7 +269,7 @@ class Service():
                     self.restart_policy['window'] = input
                 else:
                     raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
-            
+
             #return self dictionary
             def get_dict(self):
                 """
@@ -299,6 +299,7 @@ class Service():
                     raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
             else:
                 raise Exception('INVALID INPUT: "{}" is not One of "vip" or "dnsrr"'.format(input))
+
         #add labels
         def labels(self, input):
             """
@@ -428,13 +429,11 @@ class Service():
             """
             get deploy dictionary
             """
-            if(bool(self.deploy)):
-                self.deploy['restart_policy'] = self.restart_policy.get_dict()
-                if('condition' not in self.deploy['restart_policy']):
-                    del self.deploy['restart_policy']
-                return(dict(self.deploy))
-            else:
-                raise Exception('ERROR: service.deploy is empty')
+            #check if deploy.restart_policy was defined
+            self.deploy['restart_policy'] = self.restart_policy.get_dict()
+            if(not bool(self.deploy['restart_policy'])):
+                del self.deploy['restart_policy']
+            return(dict(self.deploy))
 
     #initializer
     def __init__(self, name):
@@ -452,7 +451,7 @@ class Service():
         """
         add cap_add key and value to service
         @type   list
-        @param  Add container capabilities. 
+        @param  Add container capabilities.
         """
         if(isinstance(input, list)):
             self.service[self.name]['cap_add'] = input
@@ -472,7 +471,7 @@ class Service():
             return True
         else:
             raise Exception('INVALID INPUT: "{}" is not a list'.format(input))
-    
+
     # add cgroup_parent
     def cgroup_parent(self, input):
         """
@@ -485,7 +484,7 @@ class Service():
             return True
         else:
             raise Exception('{} -- is not a string'.format(input))
-    
+
     # add command
     def command(self, input):
         """
@@ -537,7 +536,7 @@ class Service():
                 del self.service[self.name]['credential_spec']['registry']
         else:
             raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
-    
+
     # add credential_spec using registry
     def credential_spec_registry(self, input):
         """
@@ -563,7 +562,7 @@ class Service():
             self.service[self.name]['depends_on'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a list".format(input))
-    
+
     # add devices
     def devices(self, input):
         """
@@ -576,7 +575,6 @@ class Service():
         else:
             raise Exception("INVALID INPUT: '{}' is not a list".format(input))
 
-    # add dns 
     def dns(self, input):
         """
         add dns section to service
@@ -599,7 +597,7 @@ class Service():
             self.service[self.name]['dns_search'] = input
         else:
             raise Exception("INVALID INPUT: '{}' is not a list or string".format(input))
-    
+
     # add entrypoint
     def entrypoint(self, input):
         """
@@ -680,7 +678,7 @@ class Service():
         """
         add extra_hosts to service
         @type   list
-        @param  Add hostname mappings. 
+        @param  Add hostname mappings.
         """
         if(isinstance(input, list)):
             self.service[self.name]['extra_hosts'] = input
@@ -802,27 +800,29 @@ class Service():
         Get service name
         """
         return(self.name)
-    
+
     #spit out service dictionary
     def spit(self):
         """
         Output the description (dictionary) of this service
         """
-        if(bool(self.build.get_dict())):
-            self.service[self.name]['build'] = self.build.get_dict()
+        #make sure service.build was defined correctly
+        self.service[self.name]['build'] = self.build.get_dict()
+        if(bool(self.service[self.name]['build'])):
             if('context' not in self.service[self.name]['build']):
                 del self.service[self.name]['build']
                 raise Exception('ERROR: service.build was defined without a context')
         else:
             del self.service[self.name]['build']
 
-        if(bool(self.deploy.get_dict())):
-            self.service[self.name]['deploy'] = self.deploy.get_dict()
-        else:
+        #make sure service.deploy was defined correctly
+        self.service[self.name]['deploy'] = self.deploy.get_dict()
+        if(not bool(self.service[self.name]['deploy'])):
             del self.service[self.name]['deploy']
 
-        if(bool(self.healthcheck.get_dict())):
-            self.service[self.name]['healthcheck'] = self.healthcheck.get_dict()
+        #make sure service.heathcheck was defined correctly
+        self.service[self.name]['healthcheck'] = self.healthcheck.get_dict()
+        if(bool(self.service[self.name]['healthcheck'])):
             if('test' not in self.service[self.name]['healthcheck']):
                 del self.service[self.name]['healthcheck']
                 raise Exception('ERROR: service.healthcheck was defined without a test')
