@@ -3,7 +3,7 @@ dockercomposeHelp is a python package for building complex docker-compose files 
 ## Usage:
 It follows a very simple usage procedure:
 ```python
-from dockerCompose.compose import Compose
+from dockercomposeHelp.compose import Compose
 my_compose = Compose() #create a compose instance
 service_db = Service('db') #create a service instance
 service_db.image('mysql')

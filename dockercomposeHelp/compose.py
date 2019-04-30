@@ -862,13 +862,27 @@ class Compose():
             raise Exception("INVALID INPUT: '{}' is not a dictionary.".format(input))
 
     # make compose file
-    def make_compose(self, path=None):
+    def make_compose(self, path=None, name=None):
         """
         create compose file in this directory
         @type string
         @param path to compose output location
         """
+        if(name==None):
+            name='docker-compose.yaml'
         if(path==None):
             path=self.path
-        with open(path+'/docker-compose.yaml', 'w') as this_file:
+            print(path)
+        with open(path+'/'+name, 'w') as this_file:
             yaml.dump(self.compose, this_file, Dumper=MyDumper, default_flow_style=False)
+if __name__ == '__main__':
+    my_compose = Compose() #create a compose instance
+    service_db = Service('db') #create a service instance
+    service_db.image('mysql')
+    service_db.command('--default-authentication-plugin=mysql_native_password')
+    service_db.restart('always')
+    service_db.environment({'MYSQL_ROOT_PASSWORD': 'example'})
+    service_db.ports(['8080:8080'])
+
+    my_compose.add_service(service_db) #add service to compose
+    my_compose.make_compose(path='/Users/alima/') #output compose
