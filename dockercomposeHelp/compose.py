@@ -464,7 +464,7 @@ class Service():
         """
         add cap_drop key and value to service
         @type   list
-        @param  Drop container capabilities.
+        @param  Drop container capabilities. 
         """
         if(isinstance(input, list)):
             self.service[self.name]['cap_drop'] = input
@@ -575,7 +575,6 @@ class Service():
         else:
             raise Exception("INVALID INPUT: '{}' is not a list".format(input))
 
-    # add dns
     def dns(self, input):
         """
         add dns section to service
@@ -873,32 +872,3 @@ class Compose():
             path=self.path
         with open(path+'/docker-compose.yaml', 'w') as this_file:
             yaml.dump(self.compose, this_file, Dumper=MyDumper, default_flow_style=False)
-
-if __name__ == "__main__":
-    my_compose = Compose() #create a compose instance
-    service_db = Service('db') #create a service instance
-    service_db.image('mysql')
-    service_db.command('--default-authentication-plugin=mysql_native_password')
-    service_db.restart('always')
-    service_db.environment({'MYSQL_ROOT_PASSWORD': 'example'})
-    service_db.ports(['8080:8080'])
-
-    # add selenium runner
-    runner_name = ("runner")
-    runner = Service(runner_name)
-    runner.container_name(runner_name)
-    runner.volumes([":/robot/resources/test-tools"])
-    runner.command(["cd /robot/resources/test-tools &&"])
-    my_compose.add_service(runner)
-
-    #add selenium runner service
-    selenium_service_name = ("selenium_runner")
-    selenium_runner = Service(selenium_service_name)
-    selenium_runner.container_name(selenium_service_name)
-    selenium_runner.ports(["590:5900"])
-    selenium_runner.image("selenium/standalone-firefox-debug:latest")
-
-    my_compose.add_service(selenium_runner)
-    my_compose.add_service(runner)
-    my_compose.add_service(service_db) #add service to compose
-    my_compose.make_compose()
