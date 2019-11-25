@@ -781,6 +781,18 @@ class Service():
         else:
             raise Exception("INVALID INPUT: '{}' is not a string.".format(input))
 
+    # add shm_size
+    def shm_size(self, input):
+        """
+        Add shm_size key and value to this service
+        @type   string
+        @param  Specify a custom shared memory size when the service is running.
+        """
+        if(isinstance(input, str)):
+            self.service['shm_size'] = input
+        else:
+            raise Exception('INVALID INPUT: "{}" is not a string'.format(input))
+
     # add volumes
     def volumes(self, input):
         """
